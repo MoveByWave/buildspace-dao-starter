@@ -83,17 +83,6 @@ const memberList = useMemo(() => {
     // If we are, we'll return the amount of token the user has.
     // Otherwise, return 0.
     const member = memberTokenAmounts?.find(({ holder }) => holder === address);
-    if (address && (network?.[0].data.chain.id !== ChainId.Goerli)) {
-      return (
-        <div className="unsupported-network">
-          <h2>Please connect to Goerli</h2>
-          <p>
-            This dapp only works on the Goerli network, please switch networks
-            in your connected wallet.
-          </p>
-        </div>
-      );
-    }
     return {
       address,
       tokenAmount: member?.balance.displayValue || '0',
@@ -153,6 +142,31 @@ useEffect(() => {
   checkIfUserHasVoted();
 
 }, [hasClaimedNFT, proposals, address, vote]);
+  
+    if (address && network?.[0].data.chain.id !== ChainId.Goerli) {
+    return (
+      <div className="unsupported-network">
+        <h2>Please connect to Goerli</h2>
+        <p>
+          This dapp only works on the Goerli network, please switch networks in
+          your connected wallet.
+        </p>
+      </div>
+    );
+  }
+
+  // This is the case where the user hasn't connected their wallet
+  // to your web app. Let them call connectWallet.
+  if (!address) {
+    return (
+      <div className="landing">
+        <h1>Welcome to NarutoDAO</h1>
+        <div className="btn-hero">
+          <ConnectWallet />
+        </div>
+      </div>
+    );
+  }
 
  // If the user has already claimed their NFT we want to display the internal DAO page to them
 // only DAO members will see this. Render all the members + token amounts.
